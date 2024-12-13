@@ -1,9 +1,10 @@
+import { Guid } from '@shared/types/guid';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { News } from '@news/application/news';
-import { NewsRepositoryInterface } from '@news/application/ports/news-repository.interface';
 import { NewsDbEntity } from '@news/infrastructure/database/entities/news.db-entity';
-import { UnableToMapNewsDbEntityError } from '@news/infrastructure/database/repositories/errors/unable-to-map-news-db-entity.error';
-import { Repository } from 'typeorm';
+import { NewsDto } from '@news/infrastructure/database/dtos/news.dto';
+import { NewsRepositoryInterface } from '@news/application/ports/news-repository.interface';
 
 export class NewsRepository
   extends Repository<NewsDbEntity>
@@ -21,6 +22,20 @@ export class NewsRepository
     return this.toDomainEntity(savedNews);
   }
 
+  public async getNewsByIds(ids: Guid[]): Promise<News[]> {
+    const news = await this.findBy({
+      id: In(ids),
+    });
+
+    return news.map((pieceOfNews) => this.toDomainEntity(pieceOfNews));
+  }
+
+  public async getAllNewsWithDate(): Promise<NewsDto[]> {
+    const news = await this.find();
+
+    return news.map((pieceOfNews) => this.toDto(pieceOfNews));
+  }
+
   private toDatabaseEntity(domainEntity: News): NewsDbEntity {
     return super.create({
       id: domainEntity.id,
@@ -32,14 +47,15 @@ export class NewsRepository
   private toDomainEntity(dbEntity: NewsDbEntity): News {
     const domainEntity = News.Load(dbEntity.id, dbEntity.url, dbEntity.title);
 
-    if (domainEntity === null) {
-      throw new UnableToMapNewsDbEntityError(
-        dbEntity.id.value,
-        dbEntity.url,
-        dbEntity.title,
-      );
-    }
-
     return domainEntity;
+  }
+
+  private toDto(dbEntity: NewsDbEntity): NewsDto {
+    return {
+      createdAt: dbEntity.createdAt,
+      id: dbEntity.id,
+      title: dbEntity.title,
+      url: dbEntity.url,
+    };
   }
 }

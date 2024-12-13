@@ -1,5 +1,4 @@
 import { Guid } from '@shared/types/guid';
-import { UnableToParseGuidError } from '@shared/infrastructure/database/transformers/errors/unable-to-parse-guid.error';
 import { FindOperator, ValueTransformer } from 'typeorm';
 
 export class ColumnGuidTransformer implements ValueTransformer {
@@ -8,13 +7,7 @@ export class ColumnGuidTransformer implements ValueTransformer {
       return null;
     }
 
-    const guid = Guid.create(valueFromDatabase);
-
-    if (guid === null) {
-      throw new UnableToParseGuidError(valueFromDatabase);
-    }
-
-    return guid;
+    return Guid.create(valueFromDatabase);
   }
 
   to(

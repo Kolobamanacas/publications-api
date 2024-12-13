@@ -10,7 +10,6 @@ import { InvalidUrlError } from '@news/application/commands/errors/invalid-url.e
 import { News } from '@news/application/news';
 import { NewsRepository } from '@news/infrastructure/database/repositories/news.repository';
 import { NewsRepositoryInterface } from '@news/application/ports/news-repository.interface';
-import { UnableToCreateNewsError } from '@news/application/commands/errors/unable-to-create-news.error';
 import { UnableToGetTitleFromPageError } from '@news/application/commands/errors/unable-to-get-title-from-page.error';
 import { firstValueFrom } from 'rxjs';
 import { isURL } from 'validator';
@@ -35,11 +34,6 @@ export class CreateNewsCommandHandler
 
     const title = await this.getTitleByUrl(url);
     const newsToCreate = News.Create(url, title);
-
-    if (newsToCreate === null) {
-      throw new UnableToCreateNewsError(url, title);
-    }
-
     const news = await this.newsRepository.createNews(newsToCreate);
 
     return news.id;

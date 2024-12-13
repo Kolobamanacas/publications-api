@@ -1,3 +1,4 @@
+import { InvalidGuidError } from '@shared/types/errors/invalid-guid.error';
 import { validate, v4 } from 'uuid';
 
 export class Guid {
@@ -7,9 +8,9 @@ export class Guid {
     return this.props.value;
   }
 
-  public static create(value: string): Guid | null {
+  public static create(value: string): Guid {
     if (!validate(value)) {
-      return null;
+      throw new InvalidGuidError(value);
     }
 
     return new Guid({ value });
@@ -17,5 +18,9 @@ export class Guid {
 
   public static generate(): Guid {
     return new Guid({ value: v4() });
+  }
+
+  public static isGuid(value: string): boolean {
+    return validate(value);
   }
 }

@@ -1,3 +1,5 @@
+import { EmptyTitleError } from '@news/application/errors/empty-title.error';
+import { InvalidUrlError } from '@news/application/errors/invalid-url.error';
 import { Guid } from '@shared/types/guid';
 import { isURL } from 'validator';
 
@@ -22,25 +24,25 @@ export class News {
     return this.props.title;
   }
 
-  public static Create(url: string, title: string): News | null {
+  public static Create(url: string, title: string): News {
     if (!isURL(url)) {
-      return null;
+      throw new InvalidUrlError(url);
     }
 
     if (title.length === 0) {
-      return null;
+      throw new EmptyTitleError();
     }
 
     return new News({ id: Guid.generate(), url, title });
   }
 
-  public static Load(id: Guid, url: string, title: string) {
+  public static Load(id: Guid, url: string, title: string): News {
     if (!isURL(url)) {
-      return null;
+      throw new InvalidUrlError(url);
     }
 
     if (title.length === 0) {
-      return null;
+      throw new EmptyTitleError();
     }
 
     return new News({ id, url, title });
