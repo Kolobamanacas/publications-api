@@ -10,11 +10,13 @@ import { NewsRepository } from '@news/infrastructure/database/repositories/news.
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NewsTemplater } from '@news/infrastructure/templater/news.templater';
 import { CreateNewsReportCommandHandler } from '@news/application/commands/create-news-report.command-handler';
+import { FilesModule } from 'src/modules/files/files.module';
 
 export const TemplaterProviderToken = Symbol('TemplaterProviderToken');
 
 const modules = [
   CqrsModule,
+  FilesModule,
   HttpModule,
   TypeOrmModule.forFeature([NewsDbEntity]),
 ];

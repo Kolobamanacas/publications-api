@@ -23,8 +23,8 @@ export class CreateNewsReportCommandHandler
     ids,
   }: CreateNewsReportCommand): Promise<CreateNewsReportResult> {
     const news = await this.newsRepository.getNewsByIds(ids);
-    const url = await this.newsTemplater.createNewsReport(news);
+    const newsReportText = await this.newsTemplater.createNewsReport(news);
 
-    return url;
+    return newsReportText;
   }
 }

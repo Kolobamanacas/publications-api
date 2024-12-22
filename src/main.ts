@@ -5,9 +5,22 @@ import {
   HttpStatus,
   ValidationPipe,
 } from '@nestjs/common';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
+import { resolve } from 'node:path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(),
+  );
+
+  app.useStaticAssets({
+    prefix: '/public',
+    root: resolve(__dirname, 'public'),
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
